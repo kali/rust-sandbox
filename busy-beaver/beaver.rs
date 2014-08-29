@@ -76,18 +76,63 @@ impl<'a> Machine<'a> {
 fn main() {
     let def = MachineDefinition {
         states: vec![
+/* 2 states
             MachineState {
                 zero:MachineTransition { write:true, move:Right, switch:1 },
                 one:MachineTransition { write:true, move:Left, switch:1 }},
             MachineState {
                 zero:MachineTransition { write:true, move:Left, switch:0 },
                 one:MachineTransition { write:true, move:Right, switch:-1 }}
+*/
+/* 3 states
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:1 },
+                one:MachineTransition { write:true, move:Right, switch:-1 }},
+            MachineState {
+                zero:MachineTransition { write:false, move:Right, switch:2 },
+                one:MachineTransition { write:true, move:Right, switch:1 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Left, switch:2 },
+                one:MachineTransition { write:true, move:Left, switch:0 }}
+*/
+/* 4 states
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:1 },
+                one:MachineTransition { write:true, move:Left, switch:1 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Left, switch:0 },
+                one:MachineTransition { write:false, move:Left, switch:2 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:-1 },
+                one:MachineTransition { write:true, move:Left, switch:3 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:3 },
+                one:MachineTransition { write:false, move:Right, switch:0 }}
+*/
+/* 5 states */
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:1 },
+                one:MachineTransition { write:true, move:Left, switch:2 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:2 },
+                one:MachineTransition { write:true, move:Right, switch:1 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:3 },
+                one:MachineTransition { write:false, move:Left, switch:4 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Left, switch:0 },
+                one:MachineTransition { write:true, move:Left, switch:3 }},
+            MachineState {
+                zero:MachineTransition { write:true, move:Right, switch:-1 },
+                one:MachineTransition { write:false, move:Left, switch:0 }}
         ]
     };
     let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tapeLeft:vec![], tapeRight:vec![false] };
-    println!("{}", machine.dump())
+    let mut i:uint = 0;
     while machine.state != -1 {
+//        println!("{:9u} {}", i, machine.dump())
         machine.step();
-        println!("{}", machine.dump())
+        i+=1;
     }
+    println!("{:9u} {}", i, machine.dump())
 }
