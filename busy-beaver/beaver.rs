@@ -134,5 +134,6 @@ fn main() {
         machine.step();
         i+=1;
     }
-    println!("{:9u} {}", i, machine.dump())
+    println!("{:9u}", i);
+//    println!("{:9u} {}", i, machine.dump())
 }
