@@ -1,4 +1,5 @@
 extern crate debug;
+extern crate time;
 
 use std::string::String;
 
@@ -127,13 +128,17 @@ fn main() {
                 one:MachineTransition { write:false, move:Left, switch:0 }}
         ]
     };
-    let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tapeLeft:vec![], tapeRight:vec![false] };
-    let mut i:uint = 0;
-    while machine.state != -1 {
-//        println!("{:9u} {}", i, machine.dump())
-        machine.step();
-        i+=1;
+    for it in range(1u,100) {
+        let start = time::precise_time_s();
+        let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tapeLeft:vec![], tapeRight:vec![false] };
+        let mut i:uint = 0;
+        while machine.state != -1 {
+    //        println!("{:9u} {}", i, machine.dump())
+            machine.step();
+            i+=1;
+        }
+        let end = time::precise_time_s();
+        println!("{:9u} steps in {}s", i, end-start);
     }
-    println!("{:9u}", i);
 //    println!("{:9u} {}", i, machine.dump())
 }
