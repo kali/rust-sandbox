@@ -1,3 +1,4 @@
+
 extern crate debug;
 extern crate time;
 
@@ -28,17 +29,18 @@ struct Machine<'a> {
     definition: &'a MachineDefinition,
     state: int,
     position: int,
-    tapeLeft:Vec<bool>,
-    tapeRight:Vec<bool>
+    tape_left:Vec<bool>,
+    tape_right:Vec<bool>
 }
 
 impl<'a> Machine<'a> {
+    #[allow(dead_code)]
     fn dump(&self) -> String {
-        let dumpedRightTape:String = self.tapeRight.iter().map(|&b| if b { '1' } else { '0' } ).collect();
-        let dumpedLeftTape:String = self.tapeLeft.iter().map(|&b| if b { '1' } else { '0' } ).rev().collect();
-        let index:uint = (dumpedLeftTape.len() as int + self.position + 1) as uint;
-        let tapeAsString = String::from_str(" ")+dumpedLeftTape+dumpedRightTape+" ";
-        let tape = tapeAsString.as_slice();
+        let dumped_right_tape:String = self.tape_right.iter().map(|&b| if b { '1' } else { '0' } ).collect();
+        let dumped_left_tape:String = self.tape_left.iter().map(|&b| if b { '1' } else { '0' } ).rev().collect();
+        let index:uint = (dumped_left_tape.len() as int + self.position + 1) as uint;
+        let tape_as_string = String::from_str(" ")+dumped_left_tape+dumped_right_tape+" ";
+        let tape = tape_as_string.as_slice();
         format!("s:{} tape:{:s}[{:s}]{:s}", self.state,
             tape.slice(0,index), tape.slice(index, index+1), tape.slice(index+1, tape.len()))
     }
@@ -49,25 +51,25 @@ impl<'a> Machine<'a> {
         }
         let read:bool = if self.position >= 0 {
             let index:uint = self.position as uint;
-            if index == self.tapeRight.len() {
-                self.tapeRight.grow_set(index, &false, false);
+            if index == self.tape_right.len() {
+                self.tape_right.grow_set(index, &false, false);
             }
-            self.tapeRight[index]
+            self.tape_right[index]
         } else {
             let index:uint = (-self.position-1) as uint;
-            if index == self.tapeLeft.len() {
-                self.tapeLeft.grow_set(index, &false, false);
+            if index == self.tape_left.len() {
+                self.tape_left.grow_set(index, &false, false);
             }
-            self.tapeLeft[index]
+            self.tape_left[index]
         };
         let state = self.definition.states[self.state as uint];
         let transition = if read { state.one } else { state.zero };
         if self.position >= 0 {
             let index:uint = self.position as uint;
-            self.tapeRight.grow_set(index, &false, transition.write);
+            self.tape_right.grow_set(index, &false, transition.write);
         } else {
             let index:uint = (-self.position-1) as uint;
-            self.tapeLeft.grow_set(index, &false, transition.write);
+            self.tape_left.grow_set(index, &false, transition.write);
         };
         self.state = transition.switch;
         self.position += transition.move as int
@@ -128,9 +130,9 @@ fn main() {
                 one:MachineTransition { write:false, move:Left, switch:0 }}
         ]
     };
-    for it in range(1u,100) {
+    for it in range(1u,10) {
         let start = time::precise_time_s();
-        let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tapeLeft:vec![], tapeRight:vec![false] };
+        let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tape_left:vec![], tape_right:vec![false] };
         let mut i:uint = 0;
         while machine.state != -1 {
     //        println!("{:9u} {}", i, machine.dump())
