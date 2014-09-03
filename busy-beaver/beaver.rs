@@ -49,28 +49,22 @@ impl<'a> Machine<'a> {
         if self.state < 0 {
             return
         }
-        let read:bool = if self.position >= 0 {
+        let cell:&mut bool = if self.position >= 0 {
             let index:uint = self.position as uint;
             if index == self.tape_right.len() {
                 self.tape_right.grow_set(index, &false, false);
             }
-            self.tape_right[index]
+            self.tape_right.get_mut(index)
         } else {
             let index:uint = (-self.position-1) as uint;
             if index == self.tape_left.len() {
                 self.tape_left.grow_set(index, &false, false);
             }
-            self.tape_left[index]
+            self.tape_left.get_mut(index)
         };
         let state = self.definition.states[self.state as uint];
-        let transition = if read { state.one } else { state.zero };
-        if self.position >= 0 {
-            let index:uint = self.position as uint;
-            self.tape_right.grow_set(index, &false, transition.write);
-        } else {
-            let index:uint = (-self.position-1) as uint;
-            self.tape_left.grow_set(index, &false, transition.write);
-        };
+        let transition = if *cell { state.one } else { state.zero };
+        *cell = transition.write;
         self.state = transition.switch;
         self.position += transition.move as int
     }
