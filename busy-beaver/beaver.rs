@@ -21,12 +21,12 @@ struct MachineState {
     one:MachineTransition
 }
 
-struct MachineDefinition {
-    states:Vec<MachineState>
+struct MachineDefinition<'a> {
+    states:&'a[MachineState]
 }
 
 struct Machine<'a> {
-    definition: &'a MachineDefinition,
+    definition: &'a MachineDefinition<'a>,
     state: int,
     position: int,
     tape_left:Vec<bool>,
@@ -71,8 +71,7 @@ impl<'a> Machine<'a> {
 }
 
 fn main() {
-    let def = MachineDefinition {
-        states: vec![
+    let states:&[MachineState] = [
 /* 2 states
             MachineState {
                 zero:MachineTransition { write:true, move:Right, switch:1 },
@@ -122,8 +121,8 @@ fn main() {
             MachineState {
                 zero:MachineTransition { write:true, move:Right, switch:-1 },
                 one:MachineTransition { write:false, move:Left, switch:0 }}
-        ]
-    };
+        ];
+    let def = MachineDefinition { states: states };
     for it in range(1u,10) {
         let start = time::precise_time_s();
         let mut machine:Machine = Machine { definition: &def, state:0, position: 0, tape_left:vec![], tape_right:vec![false] };
