@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 enum MachineMove {
     Left = -1,
@@ -83,43 +84,6 @@ void step(struct Machine* self) {
 int main(int argc, char** argv) {
     struct MachineDefinition def = (struct MachineDefinition) {
         (struct MachineState[]) {
-/* 2 states */
-/*
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Right, 1 },
-                (struct MachineTransition) { 1, Left, 1 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Left, 0 },
-                (struct MachineTransition) { 1, Right, -1 }}
-        }
-    };
-*/
-/* 3 states
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Right, 1 },
-                (struct MachineTransition) { 1, Right, -1 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 0, Right, 2 },
-                (struct MachineTransition) { 1, Right, 1 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Left, 2 },
-                (struct MachineTransition) { 1, Left, 0 }}
-*/
-/* 4 states
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Right, 1 },
-                (struct MachineTransition) { 1, Left, 1 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Left, 0 },
-                (struct MachineTransition) { 0, Left, 2 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Right, -1 },
-                (struct MachineTransition) { 1, Left, 3 }},
-            (struct MachineState) {
-                (struct MachineTransition) { 1, Right, 3 },
-                (struct MachineTransition) { 0, Right, 0 }}
-*/
-/* 5 states */
             (struct MachineState) {
                 (struct MachineTransition) { 1, Right, 1 },
                 (struct MachineTransition) { 1, Left, 2 }},
@@ -137,12 +101,17 @@ int main(int argc, char** argv) {
                 (struct MachineTransition) { 0, Left, 0 }}
         }
     };
-    struct Machine machine = (struct Machine) { &def, 0, 0, {0, 0, 0}, { 0, 0, 0}};
-    int i = 0;
-    char buffer[4096];
-    while(machine.state != -1) {
-        step(&machine);
-        i+=1;
+    for(int j = 0; j<10; j++) {
+        int i = 0;
+        struct timeval before;
+        struct timeval after;
+        struct Machine machine = (struct Machine) { &def, 0, 0, {0, 0, 0}, { 0, 0, 0}};
+        gettimeofday(&before, NULL);
+        while(machine.state != -1) {
+            step(&machine);
+            i+=1;
+        }
+        gettimeofday(&after, NULL);
+        printf("i:%d %ldms\n", i, (after.tv_sec-before.tv_sec)*1000 + (after.tv_usec - before.tv_usec)/1000);
     }
-    printf("i: %d\n", i);
 }
