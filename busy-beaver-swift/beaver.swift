@@ -37,26 +37,34 @@ class Machine {
         tapeLeft.reverseMap( if(_) '1' else '0' ).mkString +
         '|' + tapeRight.map( if(_) '1' else '0').mkString
 */
-        return "state:\(state) position:\(position) tape:"
+        return "state:\(state) position:\(position) tape: \(tapeLeft) \(tapeRight)"
     }
 
     func step() {
         if(state == -1) {
             return
         }
-        var (tape,index) = position>=0 ? (tapeRight,position) : (tapeLeft, -position-1)
-println("1 \(tapeLeft) \(tapeRight)")
-        if(index == tape.count) {
-            tape.append(false)
+        if(position >= 0) {
+            if(position >= tapeRight.count) {
+                tapeRight.append(false)
+            }
+            let read = tapeRight[position]
+            let s = definition.states[state]
+            let transition = read ? s.one : s.zero
+            tapeRight[position] = transition.write
+            state = transition.switchTo
+            position = position + transition.move.toRaw()
+        } else {
+            if(-position-1 >= tapeLeft.count) {
+                tapeLeft.append(false)
+            }
+            let read = tapeLeft[-position-1]
+            let s = definition.states[state]
+            let transition = read ? s.one : s.zero
+            tapeLeft[-position-1] = transition.write
+            state = transition.switchTo
+            position = position + transition.move.toRaw()
         }
-println("2 \(tape) \(tapeLeft) \(tapeRight)")
-        let read = tape[index]
-        let s = definition.states[state]
-        let transition = read ? s.one : s.zero
-        tape[index] = transition.write
-println("3 \(tapeLeft) \(tapeRight)")
-        state = transition.switchTo
-        position = position + transition.move.toRaw()
     }
 }
 
@@ -82,6 +90,7 @@ for index in 0...100 {
     let machine = Machine(def:definition)
     while(machine.state != -1) {
         machine.step()
+        if(i%1000==0) { println(i) }
         i+=1
     }
     println(i)
