@@ -53,7 +53,7 @@ class Machine {
             let transition = read ? s.one : s.zero
             tapeRight[position] = transition.write
             state = transition.switchTo
-            position = position + transition.move.toRaw()
+            position = position + transition.move.rawValue
         } else {
             if(-position-1 >= tapeLeft.count) {
                 tapeLeft.append(false)
@@ -63,7 +63,7 @@ class Machine {
             let transition = read ? s.one : s.zero
             tapeLeft[-position-1] = transition.write
             state = transition.switchTo
-            position = position + transition.move.toRaw()
+            position = position + transition.move.rawValue
         }
     }
 }
@@ -84,14 +84,12 @@ let definition = MachineDefinition(s:[
     MachineState (
         zero:MachineTransition (write:true,move:MachineMove.Right,switchTo:-1),
         one :MachineTransition (write:false,move:MachineMove.Left,switchTo:0))
-    ])
-for index in 0...100 {
+])
+for index in 0...10 {
     var i = 0
     let machine = Machine(def:definition)
     while(machine.state != -1) {
         machine.step()
-        if(i%1000==0) { println(i) }
         i+=1
     }
-    println(i)
 }
