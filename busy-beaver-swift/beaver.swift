@@ -20,7 +20,7 @@ class MachineDefinition {
     }
 }
 
-class Machine {
+private class Machine {
     let definition: MachineDefinition
     var state: Int = 0
     var position: Int = 0
