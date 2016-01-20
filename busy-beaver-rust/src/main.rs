@@ -1,7 +1,6 @@
 
 extern crate time;
 
-use std::string::String;
 use MachineMove::*;
 
 #[derive(Copy,Clone)]
